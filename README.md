@@ -36,3 +36,16 @@ The conversion process uses Python scripts to transform Markdown command files i
 - `commands/` - Command definitions in Markdown format that can be converted to various formats
 - `scripts/` - Utility scripts for format conversion (e.g., `convert_commands.py`)
 - `build/` - Generated command files in assistant-specific formats (e.g., TOML for Gemini)
+
+## Slash Command Namespacing Tips
+
+Organize your commands into subdirectories to create namespaced slash commands, improving organization and avoiding name conflicts. Each assistant handles namespacing slightly differently:
+
+- **OpenCode**: Use subdirs for namespacing (e.g., `commands/git/commit.md` → `/git:commit`). Supports arguments (`$ARGUMENTS`), shell injection (`!`command``), file refs (`@file`), and YAML frontmatter for metadata like `description`, `agent`, and `model`.
+- **Claude**: Similar to OpenCode (e.g., `commands/git/commit.md` → `/project:git:commit` for project commands or `/user:git:commit` for global). Use `~/.claude/commands/` for global commands. Supports Markdown with frontmatter.
+- **Gemini**: Commands are converted to TOML with preserved subdirs (e.g., `commands/git/commit.md` → `git/commit.toml` → `/git:commit`). Supports `{{args}}` for arguments and `!{command}` for shell injection in prompts.
+
+**Tips**:
+- Subdirs create colon-separated namespaces (e.g., `commands/dev/build/deploy.md` → `/dev:build:deploy`).
+- Commands can override built-ins if they share names.
+- Test deployment with `make deploy-commands` to ensure subdirs sync correctly.

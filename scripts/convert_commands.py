@@ -24,30 +24,37 @@ def convert_md_to_toml(input_dir, output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    for filename in os.listdir(input_dir):
-        if filename.endswith('.md'):
-            input_path = os.path.join(input_dir, filename)
-            with open(input_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            metadata, body = parse_frontmatter(content)
-            description = metadata.get('description', 'No description')
-            prompt = body
+    for root, dirs, files in os.walk(input_dir):
+        for filename in files:
+            if filename.endswith('.md'):
+                input_path = os.path.join(root, filename)
+                rel_path = os.path.relpath(input_path, input_dir)
+                rel_dir = os.path.dirname(rel_path)
+                output_subdir = os.path.join(output_dir, rel_dir)
+                if not os.path.exists(output_subdir):
+                    os.makedirs(output_subdir)
 
-            toml_content = f'''description = "{description}"
+                with open(input_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+
+                metadata, body = parse_frontmatter(content)
+                description = metadata.get('description', 'No description')
+                prompt = body
+
+                toml_content = f'''description = "{description}"
 
 prompt = """
 {prompt}
 """
 '''
 
-            output_filename = filename.replace('.md', '.toml')
-            output_path = os.path.join(output_dir, output_filename)
-            
-            with open(output_path, 'w', encoding='utf-8') as f:
-                f.write(toml_content)
-            
-            print(f"Converted {input_path} to {output_path}")
+                output_filename = filename.replace('.md', '.toml')
+                output_path = os.path.join(output_subdir, output_filename)
+
+                with open(output_path, 'w', encoding='utf-8') as f:
+                    f.write(toml_content)
+
+                print(f"Converted {input_path} to {output_path}")
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
