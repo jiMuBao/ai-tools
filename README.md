@@ -37,6 +37,29 @@ The conversion process uses Python scripts to transform Markdown command files i
 - `scripts/` - Utility scripts for format conversion (e.g., `convert_commands.py`)
 - `build/` - Generated command files in assistant-specific formats (e.g., TOML for Gemini)
 
+## Commands and Skills
+
+### When to Use Commands vs Skills
+
+**Use slash commands when:**
+- You want to control exactly when it runs
+- The task has fixed steps
+- Consistency matters more than flexibility
+- You don't trust Claude to figure out when to apply it (wise)
+
+**Use skills when:**
+- Instructions only apply sometimes (not every conversation)
+- You want to reduce CLAUDE.md bloat
+- You're okay with Claude deciding relevance (optimistic)
+- You want to share patterns across projects/teams
+- You're mentally prepared to invoke them explicitly anyway
+
+### Key Differences
+
+- **Trigger Control** — Slash commands run when YOU invoke them; Skills run when Claude decides they're relevant
+- **Context** — Slash commands take explicit arguments; Skills infer context from conversation
+- **Token Cost** — Slash commands load fully every time; Skills lazy-load (only description initially)
+
 ## Slash Command Namespacing Tips
 
 Organize your commands into subdirectories to create namespaced slash commands, improving organization and avoiding name conflicts. Each assistant handles namespacing slightly differently:
