@@ -4,18 +4,21 @@ description: Generates a clear git commit message and a short changelog from sta
 
 Run `git diff --staged` to inspect the staged changes: !`git diff --staged`
 
+Run `git branch --show-current` to get the current branch name: !`git branch --show-current`
+
 Analyze the diff and identify:
 - The main type of change (feat, fix, refactor, chore, docs, test, perf, build, ci).
 - The scope (folder, module, or feature name) if it is clear.
 - The key behavior changes and any important side effects.
 
-Generate a Conventional Commit style subject line:
+Generate a Conventional Commit style subject line with branch name prefix:
 
 Format:
-`type(scope): short summary`
+`branch-name: type(scope): short summary`
 
 Rules:
-- Use imperative mood (e.g. "add", "fix", "refactor").
+- Use the branch name exactly as-is at the beginning (for JIRA tracking).
+- Use imperative mood for the summary (e.g. "add", "fix", "refactor").
 - Keep under 72 characters.
 - Scope is optional; omit it if it is not obvious.
 
@@ -34,7 +37,7 @@ Output your response in this format:
 ```text
 Commit message:
 
-type(scope): short summary
+branch-name: type(scope): short summary
 
 Optional body line 1
 Optional body line 2
