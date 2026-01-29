@@ -1,3 +1,8 @@
+# ⚠️  DEPRECATED: This Makefile is deprecated. Please use the new CLI:
+#    npx ai-tools deploy
+# The CLI provides interactive selection, auto-detection, and better UX.
+# Makefile support will be removed in a future version.
+
 # Define a macro for prompted rsync with options to delete, keep, or cancel
 define prompt_rsync
 	@echo "Checking for custom files in $(2)..."

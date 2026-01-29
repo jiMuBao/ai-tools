@@ -1,0 +1,41 @@
+{
+  "name": "@ai-tools/cli",
+  "version": "1.0.0",
+  "description": "CLI tool for deploying skills and commands to AI agents",
+  "type": "module",
+  "bin": {
+    "ai-tools": "./bin/cli.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "obuild",
+    "dev": "node src/cli.ts",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "cli",
+    "ai-agents",
+    "skills",
+    "commands",
+    "claude",
+    "cursor",
+    "gemini",
+    "opencode"
+  ],
+  "dependencies": {
+    "@clack/prompts": "^0.8.2",
+    "gray-matter": "^4.0.3",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "obuild": "^0.4.22",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
+  }
+}
