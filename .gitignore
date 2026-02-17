@@ -5,3 +5,15 @@ dist/
 .env*
 .DS_Store
 Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Build artifacts
+build/
+
+# AI Tools lock file
+.ai-tools/lock.json
