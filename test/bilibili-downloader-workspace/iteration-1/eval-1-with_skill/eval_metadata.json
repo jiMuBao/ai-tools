@@ -1,0 +1,32 @@
+{
+  "eval_id": 1,
+  "eval_name": "channel-download",
+  "prompt": "Download videos from this Bilibili channel: https://space.bilibili.com/123456789",
+  "assertions": [
+    {
+      "name": "includes_cookies_from_browser",
+      "description": "Command should include --cookies-from-browser for authentication",
+      "check": "Output contains --cookies-from-browser flag"
+    },
+    {
+      "name": "includes_rate_limiting",
+      "description": "Command should include --limit-rate to avoid bot detection",
+      "check": "Output contains --limit-rate flag"
+    },
+    {
+      "name": "includes_delays",
+      "description": "Command should include --sleep-interval and --max-sleep-interval",
+      "check": "Output contains both --sleep-interval and --max-sleep-interval"
+    },
+    {
+      "name": "includes_archive",
+      "description": "Command should include --download-archive for resume capability",
+      "check": "Output contains --download-archive flag"
+    },
+    {
+      "name": "correct_quality_format",
+      "description": "Command should specify 1080p quality with merge format",
+      "check": "Output contains -f flag with video+audio format specification"
+    }
+  ]
+}

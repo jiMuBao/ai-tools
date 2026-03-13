@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-03-13T22:22:00Z",
+  "expectations": [
+    {
+      "text": "includes_cookies_from_browser",
+      "passed": false,
+      "evidence": "Not mentioned in the generated guide. Recommends yt-dlp, you-get, and BBDown without cookie authentication."
+    },
+    {
+      "text": "includes_rate_limiting",
+      "passed": false,
+      "evidence": "No rate limiting mentioned. Baseline does not include anti-bot protection."
+    },
+    {
+      "text": "includes_delays",
+      "passed": false,
+      "evidence": "No delays between downloads mentioned."
+    },
+    {
+      "text": "includes_archive",
+      "passed": false,
+      "evidence": "No --download-archive flag for resume capability."
+    },
+    {
+      "text": "correct_quality",
+      "passed": false,
+      "evidence": "No specific quality format specified. Relies on default behavior."
+    }
+  ],
+  "overall_pass_rate": 0.0
+}

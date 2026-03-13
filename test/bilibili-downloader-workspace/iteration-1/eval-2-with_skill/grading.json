@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-13T22:22:00Z",
+  "expectations": [
+    {
+      "text": "mentions_browser_login",
+      "passed": true,
+      "evidence": "Document explains need to login to browser and close it to save cookies"
+    },
+    {
+      "text": "favorites_url_format",
+      "passed": true,
+      "evidence": "Line 5 shows favorites URL: https://space.bilibili.com/YOUR_USER_ID/favlist"
+    },
+    {
+      "text": "includes_cookies",
+      "passed": true,
+      "evidence": "Command includes --cookies-from-browser chrome"
+    }
+  ],
+  "overall_pass_rate": 1.0
+}
