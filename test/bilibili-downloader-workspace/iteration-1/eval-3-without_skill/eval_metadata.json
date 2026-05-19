@@ -1,6 +1,0 @@
-{
-  "eval_id": 3,
-  "eval_name": "single-video-download",
-  "prompt": "Download just this one video: https://www.bilibili.com/video/BV1test456",
-  "assertions": []
-}
