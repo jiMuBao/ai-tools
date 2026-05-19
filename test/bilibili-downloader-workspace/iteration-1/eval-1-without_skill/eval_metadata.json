@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "channel-download",
+  "prompt": "Download videos from this Bilibili channel: https://space.bilibili.com/123456789",
+  "assertions": []
+}

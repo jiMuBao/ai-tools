@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-03-13T22:22:00Z",
+  "expectations": [
+    {
+      "text": "includes_cookies_from_browser",
+      "passed": true,
+      "evidence": "Line 16: --cookies-from-browser chrome"
+    },
+    {
+      "text": "includes_rate_limiting",
+      "passed": true,
+      "evidence": "Line 17: --limit-rate 1M"
+    },
+    {
+      "text": "includes_delays",
+      "passed": true,
+      "evidence": "Lines 18-19: --sleep-interval 60 --max-sleep-interval 90"
+    },
+    {
+      "text": "includes_archive",
+      "passed": true,
+      "evidence": "Line 20: --download-archive ./bilibili_videos/archive.txt"
+    },
+    {
+      "text": "correct_quality",
+      "passed": true,
+      "evidence": "Line 21: -f \"bestvideo[height<=1080]+bestaudio/best\""
+    }
+  ],
+  "overall_pass_rate": 1.0
+}

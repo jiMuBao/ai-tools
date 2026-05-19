@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-13T22:22:00Z",
+  "expectations": [
+    {
+      "text": "mentions_browser_login",
+      "passed": false,
+      "evidence": "Baseline suggests BBDown with login but doesn't emphasize browser cookie extraction like the skill"
+    },
+    {
+      "text": "favorites_url_format",
+      "passed": false,
+      "evidence": "No specific favorites URL format provided. Mentions using BBDown with -p flag instead."
+    },
+    {
+      "text": "includes_cookies",
+      "passed": false,
+      "evidence": "Mentions --cookies flag but doesn't provide --cookies-from-browser approach"
+    }
+  ],
+  "overall_pass_rate": 0.0
+}

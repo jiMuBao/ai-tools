@@ -1,0 +1,23 @@
+{
+  "skill_name": "bilibili-downloader",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Download videos from this Bilibili channel: https://space.bilibili.com/123456789",
+      "expected_output": "Skill should ask clarifying questions about scope (all videos vs first page) and which browser to use, then provide appropriate yt-dlp command with anti-bot protection",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to download all videos from my Bilibili Favorites",
+      "expected_output": "Skill should explain that Favorites requires authentication via browser cookies, ask which browser, and provide command with favorites URL format",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Download just this one video: https://www.bilibili.com/video/BV1test456",
+      "expected_output": "Skill should provide single video download command without playlist/archive options, simpler than bulk download",
+      "files": []
+    }
+  ]
+}
