@@ -112,30 +112,6 @@ The CLI supports 26+ AI agents including:
 - Skills/commands deployed to project-level agent directories
 - Useful for project-specific configurations
 
-## Migration from Makefile
-
-**The Makefile is now deprecated.** Please migrate to the new CLI:
-
-### Old (Makefile):
-```bash
-make deploy-skills
-make deploy-commands
-```
-
-### New (CLI):
-```bash
-ai-tools deploy
-```
-
-The new CLI provides:
-- ✅ Interactive selection wizard
-- ✅ Agent auto-detection
-- ✅ Memory of last selections
-- ✅ Better error handling
-- ✅ Progress feedback
-
-**To continue using Makefile temporarily**, it's still available but will show a deprecation warning.
-
 ## Directory Structure
 
 - `skills/` - Skill definitions in directory format (containing SKILL.md)
