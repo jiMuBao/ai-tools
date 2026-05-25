@@ -5,7 +5,7 @@ description: Audit a specific npm package before installing. Use when the user a
   wants to inspect postinstall scripts/dependencies before running npm/pnpm/yarn install.
 ---
 
-Audit the given npm package **without installing it**. Follow all 4 steps below.
+Audit the given npm package **without installing it**. Follow all 5 steps below.
 
 ## Step 1 — Resolve Package + Version
 

@@ -1,14 +1,14 @@
 ---
-name: cb-pr
-description: List and inspect Bitbucket pull requests for the current git repo. Use when the user types /cb-pr, asks to "list PRs", "show open pull requests", "what PRs are open", or wants details on a specific PR by number (reviewers, CI status, branches, description). Auto-detects the repo from the origin remote. Requires BITBUCKET_USERNAME and BITBUCKET_TOKEN env vars. Does NOT review diffs — for that, use bitbucket-review-pr.
+name: cb-pr-list
+description: List and inspect Bitbucket pull requests for the current git repo. Use when the user types /cb-pr-list, asks to "list PRs", "show open pull requests", "what PRs are open", or wants details on a specific PR by number (reviewers, CI status, branches, description). Auto-detects the repo from the origin remote. Requires BITBUCKET_USERNAME and BITBUCKET_TOKEN env vars. Does NOT review diffs — for that, use cb-pr-review.
 ---
 
-# cb-pr — Bitbucket PR listing & inspection
+# cb-pr-list — Bitbucket PR listing & inspection
 
 Run the bundled script and pass through whatever arguments the user supplied. The script must run from a directory inside the target Bitbucket clone (it reads `git remote origin`).
 
 ```bash
-bash ~/.claude/skills/cb-pr/scripts/cb-pr.sh [args]
+bash ~/.claude/skills/cb-pr-list/scripts/cb-pr-list.sh [args]
 ```
 
 ## Invocations

@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 #
-# cb-pr — list and inspect Bitbucket Cloud pull requests for the current repo.
+# cb-pr-list — list and inspect Bitbucket Cloud pull requests for the current repo.
 # Workspace/slug is auto-detected from `git remote get-url origin`.
 # Auths with $BITBUCKET_USERNAME / $BITBUCKET_TOKEN.
 
 set -euo pipefail
 
-die() { echo "cb-pr: $*" >&2; exit 1; }
+die() { echo "cb-pr-list: $*" >&2; exit 1; }
 
 usage() {
   cat <<'EOF'
-Usage: cb-pr [open|merged|mine|<number>]
+Usage: cb-pr-list [open|merged|mine|<number>]
 
   (none) | open   List open PRs (default)
   merged          List up to 50 most-recently-merged PRs
@@ -20,8 +20,8 @@ EOF
 }
 
 # --- env + tools ---
-: "${BITBUCKET_USERNAME:?cb-pr: BITBUCKET_USERNAME is not set}"
-: "${BITBUCKET_TOKEN:?cb-pr: BITBUCKET_TOKEN is not set}"
+: "${BITBUCKET_USERNAME:?cb-pr-list: BITBUCKET_USERNAME is not set}"
+: "${BITBUCKET_TOKEN:?cb-pr-list: BITBUCKET_TOKEN is not set}"
 command -v jq >/dev/null 2>&1 || die "jq not found in PATH"
 command -v curl >/dev/null 2>&1 || die "curl not found in PATH"
 

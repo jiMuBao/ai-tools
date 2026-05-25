@@ -1,15 +1,17 @@
 ---
-name: bitbucket-review-pr
-description: Use when asked to review a Bitbucket pull request by URL or PR number, or when you want to run an automated code review on a Bitbucket PR
+name: cb-pr-review
+description: Run an automated multi-agent code review on a Bitbucket pull request, scoring findings by confidence and posting a review comment after user approval. Use when the user types /cb-pr-review, asks to "review PR 123", "review this pull request", "code review this PR", or pastes a Bitbucket PR URL with intent to review. Accepts a PR number (resolved against current git remote) or a full Bitbucket Cloud PR URL. Requires BITBUCKET_USERNAME and BITBUCKET_TOKEN env vars. Does NOT list or browse PRs — for that, use cb-pr-list.
 ---
 
-# Bitbucket PR Review
+# cb-pr-review — Bitbucket PR Review
 
 Runs parallel review agents on a Bitbucket PR, scores issues by confidence, shows findings, then asks permission before posting.
 
 **Invocation:**
-- `/bitbucket-review-pr https://bitbucket.org/workspace/repo/pull-requests/123`
-- `/bitbucket-review-pr 136`
+- `/cb-pr-review https://bitbucket.org/workspace/repo/pull-requests/123`
+- `/cb-pr-review 136`
+
+To discover PR numbers first (list open / merged / mine), use the `cb-pr-list` skill.
 
 ---
 
@@ -87,9 +89,14 @@ PR description is already available from the eligibility check response.
 
 ## Step 5 — Find Relevant CLAUDE.md Files
 
-Check for CLAUDE.md in:
+Enumerate directories containing modified files from the diffstat response:
+```bash
+jq -r '.values[].new.path' diffstat.json | xargs -n1 dirname | sort -u
+```
+
+Then check for `CLAUDE.md` in:
 - Repository root
-- Each directory containing a modified file
+- Each directory enumerated above (and walk up to root if you want broader coverage)
 
 Collect file paths — agents will reference these.
 
