@@ -79,3 +79,22 @@ export interface LockFile {
   lastSelectedSkills: string[];
   lastSelectedCommands: string[];
 }
+
+export interface PackageOptions {
+  skills: string[];        // ['*'] means all
+  out: string;             // resolved absolute path
+  yes: boolean;
+}
+
+export interface PackagePlan {
+  skills: Skill[];
+  out: string;
+}
+
+export interface PackageResult {
+  success: boolean;
+  skill: string;
+  path: string;            // archive path on success, attempted path on failure
+  bytes?: number;          // archive size on success
+  error?: string;
+}
