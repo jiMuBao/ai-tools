@@ -65,9 +65,8 @@ async function selectSkills(
       else unknown.push(name);
     }
     if (unknown.length > 0) {
-      throw new Error(
-        `Unknown skill(s): ${unknown.join(', ')}. Run 'ai-tools list --skills'.`
-      );
+      p.cancel(`Unknown skill(s): ${unknown.join(', ')}. Run 'ai-tools list --skills'.`);
+      process.exit(1);
     }
     return resolved;
   }
