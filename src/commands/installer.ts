@@ -12,17 +12,18 @@ import {
   resolve,
   relative,
 } from 'path';
-import { platform } from 'os';
+import { homedir, platform } from 'os';
 import type { Command, DeployResult } from '../types.ts';
 import type { AgentType } from '../types.ts';
 import { agents } from '../agents.ts';
 import { convertCommandsForGemini } from './converter.ts';
 import { isPathSafe, getProjectRoot } from '../utils.ts';
 
-const COMMANDS_SUBDIR = '.commands';
+const AGENTS_DIR = '.agents';
+const COMMANDS_SUBDIR = 'commands';
 
 export function getCanonicalCommandsDir(): string {
-  return join(getProjectRoot(), COMMANDS_SUBDIR);
+  return join(homedir(), AGENTS_DIR, COMMANDS_SUBDIR);
 }
 
 async function createSymlink(target: string, linkPath: string): Promise<boolean> {
@@ -133,7 +134,6 @@ export async function deployCommand(
     }
 
     const canonicalDir = join(getCanonicalCommandsDir(), command.namespace || command.name);
-    const sourceNamespaceDir = dirname(command.path);
 
     if (!isPathSafe(getCanonicalCommandsDir(), canonicalDir)) {
       return {
@@ -144,12 +144,9 @@ export async function deployCommand(
       };
     }
 
-    const canonicalSymlinkCreated = await createSymlink(sourceNamespaceDir, canonicalDir);
-
-    if (!canonicalSymlinkCreated) {
-      await mkdir(canonicalDir, { recursive: true });
-      await cp(command.path, join(canonicalDir, basename(command.path)));
-    }
+    await rm(canonicalDir, { recursive: true, force: true });
+    await mkdir(canonicalDir, { recursive: true });
+    await cp(command.path, join(canonicalDir, basename(command.path)));
 
     const symlinkCreated = await createSymlink(canonicalDir, agentDir);
 

@@ -7,7 +7,7 @@ import {
   readdir,
 } from 'fs/promises';
 import { join, resolve, relative, dirname } from 'path';
-import { platform } from 'os';
+import { homedir, platform } from 'os';
 import type { Skill, DeployResult } from '../types.ts';
 import type { AgentType } from '../types.ts';
 import { agents } from '../agents.ts';
@@ -17,7 +17,7 @@ const AGENTS_DIR = '.agents';
 const SKILLS_SUBDIR = 'skills';
 
 export function getCanonicalSkillsDir(): string {
-  return join(process.cwd(), AGENTS_DIR, SKILLS_SUBDIR);
+  return join(homedir(), AGENTS_DIR, SKILLS_SUBDIR);
 }
 
 export async function createSymlink(target: string, linkPath: string): Promise<boolean> {
@@ -105,12 +105,9 @@ export async function deploySkill(
   }
 
   try {
-    const canonicalSymlinkCreated = await createSymlink(skill.path, canonicalDir);
-
-    if (!canonicalSymlinkCreated) {
-      await mkdir(canonicalDir, { recursive: true });
-      await copyDirectory(skill.path, canonicalDir);
-    }
+    await rm(canonicalDir, { recursive: true, force: true });
+    await mkdir(canonicalDir, { recursive: true });
+    await copyDirectory(skill.path, canonicalDir);
 
     const symlinkCreated = await createSymlink(canonicalDir, agentDir);
 
