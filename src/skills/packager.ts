@@ -15,7 +15,9 @@ async function validateFrontmatter(skillPath: string): Promise<string | undefine
       return 'missing description in SKILL.md frontmatter';
     }
   } catch (err) {
-    return `cannot read SKILL.md: ${err instanceof Error ? err.message : 'unknown error'}`;
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === 'ENOENT') return 'SKILL.md not found';
+    return `cannot read SKILL.md (${code ?? 'unknown'}): ${err instanceof Error ? err.message : 'unknown error'}`;
   }
   return undefined;
 }
@@ -29,7 +31,7 @@ export async function packageSkill(skill: Skill, outDir: string): Promise<Packag
       success: false,
       skill: skill.name,
       path: archivePath,
-      error: 'invalid skill name: potential path traversal detected',
+      error: 'internal error: sanitized archive path escaped outDir',
     };
   }
 
@@ -58,6 +60,7 @@ export async function packageSkill(skill: Skill, outDir: string): Promise<Packag
     const fail = async (error: string) => {
       if (failed) return;
       failed = true;
+      // Order: stop further events, then halt the archiver, then unlink the partial file, then resolve.
       archive.removeAllListeners();
       try { archive.abort(); } catch { /* ignore */ }
       try { await rm(archivePath, { force: true }); } catch { /* ignore */ }
@@ -66,7 +69,10 @@ export async function packageSkill(skill: Skill, outDir: string): Promise<Packag
 
     output.on('error', (err) => { void fail(err.message); });
     archive.on('error', (err) => { void fail(err.message); });
-    archive.on('warning', (err) => { void fail(err.message); });
+    archive.on('warning', (err) => {
+      // ENOENT warnings are benign races (e.g. tmp/swap files vanishing mid-walk).
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') void fail(err.message);
+    });
 
     output.on('close', async () => {
       if (failed) return;
@@ -84,11 +90,13 @@ export async function packageSkill(skill: Skill, outDir: string): Promise<Packag
     });
 
     archive.pipe(output);
+    // `skip` prunes the walk (readdir-glob's `ignore` only filters emission, not traversal).
+    // `follow: false` avoids infinite loops on symlink cycles; readdir-glob has no
+    // depth-limit option, so deref is sacrificed for safety until the design doc is revisited.
     archive.glob('**/*', {
       cwd: skill.path,
-      dot: false,
-      follow: true,
-      ignore: ['node_modules/**', '.*', '**/.*'],
+      follow: false,
+      skip: ['**/node_modules', '**/.*'],
     });
 
     void archive.finalize();
