@@ -36,8 +36,7 @@ function multiselect<Value>(opts: {
   options: Array<{ value: Value; label: string; hint?: string }>;
 }) {
   return p.multiselect({
-    ...opts,
-    options: opts.options as p.Option<Value>[],
+    options: opts.options as Parameters<typeof p.multiselect>[0]['options'],
     message: `${opts.message} ${pc.dim('(space to toggle)')}`,
   }) as Promise<Value[] | symbol>;
 }
