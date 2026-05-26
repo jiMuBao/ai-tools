@@ -1,7 +1,10 @@
 import { createWriteStream } from 'fs';
 import { mkdir, readFile, rm, stat } from 'fs/promises';
 import { join, resolve } from 'path';
-import archiver from 'archiver';
+// archiver v8 dropped the callable default export; use the named ZipArchive class.
+// @ts-expect-error - @types/archiver v7 only declares the legacy CJS default; runtime exports are named.
+import { ZipArchive } from 'archiver';
+import type archiver from 'archiver';
 import matter from 'gray-matter';
 import type { Skill, PackageResult } from '../types.ts';
 import { isPathSafe, sanitizeName } from '../utils.ts';
@@ -54,7 +57,7 @@ export async function packageSkill(skill: Skill, outDir: string): Promise<Packag
 
   return new Promise<PackageResult>((resolvePromise) => {
     const output = createWriteStream(archivePath);
-    const archive = archiver('zip', { zlib: { level: 9 } });
+    const archive = new ZipArchive({ zlib: { level: 9 } }) as archiver.Archiver;
     let failed = false;
 
     const fail = async (error: string) => {

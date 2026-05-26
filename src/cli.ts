@@ -6,6 +6,7 @@ import { join, dirname } from "path";
 import { homedir } from "os";
 import { fileURLToPath } from "url";
 import { runDeploy, parseDeployOptions } from "./deploy-impl.ts";
+import { runPackage, parsePackageOptions } from "./package-impl.ts";
 import * as listCommands from "./list.ts";
 import { detectInstalledAgents, agents } from "./agents.ts";
 
@@ -56,6 +57,7 @@ function showBanner(): void {
   console.log(`  ${TEXT}deploy${RESET}    Deploy skills and/or commands`);
   console.log(`  ${TEXT}list${RESET}      List available items`);
   console.log(`  ${TEXT}status${RESET}     Show deployment status`);
+  console.log(`  ${TEXT}package${RESET}   Package skills as .skill archives`);
   console.log(`  ${TEXT}--help${RESET}     Show help`);
   console.log(`  ${TEXT}--version${RESET}  Show version`);
   console.log();
@@ -92,6 +94,12 @@ async function main(): Promise<void> {
     case "status":
     case "s": {
       await listCommands.runStatus();
+      break;
+    }
+    case "package":
+    case "p": {
+      const options = parsePackageOptions(restArgs);
+      await runPackage(options);
       break;
     }
     case "--help":
