@@ -11,7 +11,7 @@ import { homedir, platform } from 'os';
 import type { Skill, DeployResult } from '../types.ts';
 import type { AgentType } from '../types.ts';
 import { agents } from '../agents.ts';
-import { sanitizeName, isPathSafe, getProjectRoot } from '../utils.ts';
+import { sanitizeName, isPathSafe, getProjectRoot, shouldIncludeEntry } from '../utils.ts';
 
 const AGENTS_DIR = '.agents';
 const SKILLS_SUBDIR = 'skills';
@@ -59,7 +59,7 @@ async function copyDirectory(src: string, dest: string): Promise<void> {
 
   await Promise.all(
     entries
-      .filter((entry) => !entry.name.startsWith('.') && entry.name !== 'node_modules')
+      .filter((entry) => shouldIncludeEntry(entry.name))
       .map(async (entry) => {
         const srcPath = join(src, entry.name);
         const destPath = join(dest, entry.name);

@@ -40,3 +40,7 @@ export function isPathSafe(basePath: string, targetPath: string): boolean {
   const normalizedTarget = resolve(targetPath);
   return normalizedTarget.startsWith(normalizedBase) || normalizedTarget === normalizedBase;
 }
+
+export function shouldIncludeEntry(name: string): boolean {
+  return !name.startsWith('.') && name !== 'node_modules';
+}
