@@ -73,10 +73,12 @@ git-commit-msg.skill (zip)
 ```
 
 - `SKILL.md` at the archive root (claude.ai requirement)
-- Dotfiles excluded; `node_modules/` excluded
-- Symlinks dereferenced (bundle the target, not the link)
+- Dotfiles excluded; `node_modules/` excluded (pruned at traversal time via `skip`, not just emission)
+- Symlinks **not** followed (`follow: false`) — see status note below
 - Subdirectory structure preserved verbatim
 - Idempotent: overwrite any existing `<name>.skill` at the output path
+
+**Status update 2026-05-26:** shipped with `follow: false` (symlinks archived as links, not dereferenced). `readdir-glob` (the engine archiver uses) does not expose a depth-limit option, so dereferencing would expose the packager to infinite-loop on symlink cycles. Deref support is deferred pending a depth-limited globber or explicit cycle detection. Current skills don't use symlinks, so impact is nil today.
 
 ## Pre-flight validation
 
