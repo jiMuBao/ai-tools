@@ -23,6 +23,9 @@ npx ai-tools deploy
 # List available items
 npx ai-tools list
 
+# Package skills for upload/share
+npx ai-tools package --all
+
 # Check status
 npx ai-tools status
 ```
@@ -72,6 +75,26 @@ Show deployment status and history.
 ```bash
 ai-tools status
 ```
+
+### package
+Package skills as `.skill` archives for upload to claude.ai's Skills UI or generic sharing.
+
+```bash
+# Interactive picker
+ai-tools package
+
+# Specific skill(s)
+ai-tools package --skill git-commit-msg
+ai-tools package --skill a,b,c
+
+# Everything
+ai-tools package --all
+
+# Custom output directory (default: build/skills/)
+ai-tools package --all --out ./release-artifacts
+```
+
+Archives are `<name>.skill` files — zip archives with `SKILL.md` at the root, suitable for upload to claude.ai or distribution via GitHub Releases.
 
 ## Deployment Flow
 
