@@ -105,8 +105,12 @@ export async function deploySkill(
   }
 
   try {
-    await mkdir(canonicalDir, { recursive: true });
-    await copyDirectory(skill.path, canonicalDir);
+    const canonicalSymlinkCreated = await createSymlink(skill.path, canonicalDir);
+
+    if (!canonicalSymlinkCreated) {
+      await mkdir(canonicalDir, { recursive: true });
+      await copyDirectory(skill.path, canonicalDir);
+    }
 
     const symlinkCreated = await createSymlink(canonicalDir, agentDir);
 

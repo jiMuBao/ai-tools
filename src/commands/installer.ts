@@ -133,7 +133,7 @@ export async function deployCommand(
     }
 
     const canonicalDir = join(getCanonicalCommandsDir(), command.namespace || command.name);
-    const canonicalFile = join(canonicalDir, basename(command.path));
+    const sourceNamespaceDir = dirname(command.path);
 
     if (!isPathSafe(getCanonicalCommandsDir(), canonicalDir)) {
       return {
@@ -144,8 +144,12 @@ export async function deployCommand(
       };
     }
 
-    await mkdir(canonicalDir, { recursive: true });
-    await cp(command.path, canonicalFile);
+    const canonicalSymlinkCreated = await createSymlink(sourceNamespaceDir, canonicalDir);
+
+    if (!canonicalSymlinkCreated) {
+      await mkdir(canonicalDir, { recursive: true });
+      await cp(command.path, join(canonicalDir, basename(command.path)));
+    }
 
     const symlinkCreated = await createSymlink(canonicalDir, agentDir);
 
