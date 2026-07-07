@@ -13,13 +13,15 @@ Every operation has two paths:
 
 1. **MCP tools** (`mcp__claude_ai_Atlassian__*`) — preferred. Already authed via the user's claude.ai Atlassian connection. Zero setup.
 2. **Shell fallback** (`scripts/cb-jira-ops.sh`) — for environments without the Atlassian MCP server. Requires:
-   - `ATLASSIAN_URL` (e.g. `https://commercebuild.atlassian.net`)
-   - `ATLASSIAN_EMAIL`
-   - `ATLASSIAN_API_TOKEN` (https://id.atlassian.com/manage-profile/security/api-tokens)
+   - `ATLASSIAN_URL` — Commercebuild site is `https://xmdevelopmentsintl.atlassian.net` (NOT `commercebuild.atlassian.net`, which is dead/404)
+   - `ATLASSIAN_EMAIL` — your Commercebuild login email
+   - `ATLASSIAN_API_TOKEN` — a **Jira** API token from https://id.atlassian.com/manage-profile/security/api-tokens
 
-   `ATLASSIAN_API_TOKEN` and `BITBUCKET_TOKEN` (used by `cb-pr-list` / `cb-pr-review`) can be the same Atlassian API token value — both Bitbucket Cloud and Jira Cloud authenticate against it.
+   **Token gotcha — Bitbucket ≠ Jira.** `$BITBUCKET_TOKEN` (used by `cb-pr-list` / `cb-pr-review`) and `$ATLASSIAN_API_TOKEN` are **separate** tokens. A Bitbucket repository token returns `401` on Jira REST endpoints even though both are Atlassian products. Generate a dedicated Jira API token for this skill. Classic (legacy) and scoped tokens both work; scoped lets you pick `write:jira-work` + `read:jira-work` for least privilege.
 
 Detect MCP availability by checking whether `mcp__claude_ai_Atlassian__getJiraIssue` is callable. If not, use the script.
+
+**Note on MCP availability:** the Atlassian MCP path comes from the `atlassian@claude-plugins-official` plugin in Claude Code. It is OAuth-based and hosted by Claude (auto-refreshed, no token needed), but is **not portable** to other harnesses (e.g. pi) — those must use the shell fallback + a Jira API token. Also check it is enabled: in `~/.claude/settings.json` → `enabledPlugins.atlassian@claude-plugins-official` must be `true`.
 
 For the cloud ID needed by MCP calls, call `getAccessibleAtlassianResources` once and cache the result for the session.
 
@@ -53,7 +55,14 @@ mcp__claude_ai_Atlassian__createJiraIssue
 
 If you don't know which issue types exist, call `getJiraProjectIssueTypesMetadata` first.
 
-**Shell fallback:** the script doesn't do create — instead, render the description to stdout and ask the user to paste into the Jira UI. Reason: template-driven authoring is best done in conversation, not on the command line.
+**Shell fallback:** render the description to a Markdown file, then:
+```bash
+ATLASSIAN_URL=https://xmdevelopmentsintl.atlassian.net \
+ATLASSIAN_EMAIL=you@commercebuild.com \
+ATLASSIAN_API_TOKEN=<jira-token> \
+bash <skill-dir>/scripts/cb-jira-ops.sh create UN Bug "<summary>" /tmp/desc.md
+```
+The script converts the Markdown description to ADF (`scripts/md2adf.py`) and POSTs to `/rest/api/3/issue`, printing the new key + browse URL. `<skill-dir>` is this skill's directory (the agent knows it from the SKILL.md location). If you don't know which issue types exist, `GET /rest/api/3/project/UN` lists them.
 
 ### 2. View / get a ticket
 
@@ -61,8 +70,10 @@ If you don't know which issue types exist, call `getJiraProjectIssueTypesMetadat
 
 **Shell fallback:**
 ```bash
-bash ~/.claude/skills/cb-jira-ops/scripts/cb-jira-ops.sh get UN-2611
+bash <skill-dir>/scripts/cb-jira-ops.sh get UN-2611
 ```
+
+(`<skill-dir>` is this skill's directory — substitute accordingly. Examples below use `...` for brevity.)
 
 Returns: summary, status, assignee, reporter, type, priority, description, recent comments.
 
@@ -72,7 +83,7 @@ Returns: summary, status, assignee, reporter, type, priority, description, recen
 
 **Shell fallback:**
 ```bash
-bash ~/.claude/skills/cb-jira-ops/scripts/cb-jira-ops.sh search '<jql>'
+bash .../cb-jira-ops.sh search '<jql>'
 ```
 
 **Natural-language → JQL crib sheet:**

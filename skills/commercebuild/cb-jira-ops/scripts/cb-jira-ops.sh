@@ -3,6 +3,7 @@
 # cb-jira-ops — minimal shell fallback for Commercebuild Jira ops.
 # Use when the Atlassian MCP server is unavailable in the host AI agent.
 # Auths with $ATLASSIAN_EMAIL / $ATLASSIAN_API_TOKEN against $ATLASSIAN_URL.
+# Default site for Commercebuild: https://xmdevelopmentsintl.atlassian.net
 
 set -euo pipefail
 
@@ -26,13 +27,20 @@ Usage:
   cb-jira-ops comment <KEY> <body>
       Add a comment. Body may be plain text or wiki markup.
 
+  cb-jira-ops create <project-key> <type> "<summary>" <description-file.md>
+      Create an issue. Description file is Markdown (converted to ADF by
+      scripts/md2adf.py — headings, lists, fenced code, **bold** / `code` /
+      italic). Requires python3. Prints the new key + browse URL.
+
 Environment:
-  ATLASSIAN_URL          e.g. https://commercebuild.atlassian.net
+  ATLASSIAN_URL          e.g. https://xmdevelopmentsintl.atlassian.net
   ATLASSIAN_EMAIL        login email
   ATLASSIAN_API_TOKEN    https://id.atlassian.com/manage-profile/security/api-tokens
 
 Notes:
-  Create / edit / link ops are not in this fallback — use MCP or the Jira UI.
+  Edit-fields and link ops are not in this fallback — use MCP or the Jira UI.
+  Create IS supported here (markdown description -> ADF), so the fallback can
+  create tickets without the Atlassian MCP server.
 EOF
 }
 
@@ -42,6 +50,8 @@ EOF
 : "${ATLASSIAN_API_TOKEN:?cb-jira-ops: ATLASSIAN_API_TOKEN is not set}"
 command -v jq >/dev/null 2>&1 || die "jq not found in PATH"
 command -v curl >/dev/null 2>&1 || die "curl not found in PATH"
+# python3 is only required for `create`; checked lazily in cmd_create.
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 BASE="${ATLASSIAN_URL%/}/rest/api/3"
 AUTH=( -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" )
@@ -152,6 +162,26 @@ cmd_comment() {
   echo "Comment added to $key (id $(echo "$resp" | jq -r '.id'))."
 }
 
+cmd_create() {
+  local project=$1 itype=$2 summary=$3 descfile=$4
+  command -v python3 >/dev/null 2>&1 || die "python3 is required for create (markdown->ADF conversion)"
+  [[ -f "$descfile" ]] || die "description file not found: $descfile"
+  [[ -f "$SCRIPT_DIR/md2adf.py" ]] || die "md2adf.py missing next to this script: $SCRIPT_DIR/md2adf.py"
+  local adf payload resp key
+  adf=$(python3 "$SCRIPT_DIR/md2adf.py" < "$descfile") || die "markdown->ADF conversion failed"
+  payload=$(jq -nc \
+    --arg p "$project" --arg t "$itype" --arg s "$summary" --argjson d "$adf" \
+    '{fields:{project:{key:$p}, issuetype:{name:$t}, summary:$s, description:$d}}')
+  resp=$(api POST /issue --data "$payload")
+  if [[ $(echo "$resp" | jq -r '.errorMessages // empty | type') == "array" ]]; then
+    die "$(echo "$resp" | jq -r '.errorMessages[]')"
+  fi
+  key=$(echo "$resp" | jq -r '.key // empty')
+  [[ -n "$key" ]] || die "create failed: $resp"
+  echo "Created $key"
+  echo "URL: ${ATLASSIAN_URL%/}/browse/$key"
+}
+
 main() {
   local cmd=${1:-}
   case "$cmd" in
@@ -160,6 +190,7 @@ main() {
     transitions) [[ $# -eq 2 ]] || { usage; exit 2; }; cmd_transitions "$2" ;;
     transition)  [[ $# -eq 3 ]] || { usage; exit 2; }; cmd_transition  "$2" "$3" ;;
     comment)     [[ $# -eq 3 ]] || { usage; exit 2; }; cmd_comment     "$2" "$3" ;;
+    create)      [[ $# -eq 5 ]] || { usage; exit 2; }; cmd_create     "$2" "$3" "$4" "$5" ;;
     -h|--help|help|"") usage ;;
     *)           usage; exit 2 ;;
   esac
